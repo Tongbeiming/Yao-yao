@@ -1,0 +1,206 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>唯美信件</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: url('./bg.png') center/cover;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .letter-container {
+            position: absolute;
+            bottom: -100%;
+            width: 100%;
+            height: 100vh;
+            overflow-y: auto;
+            animation: riseUp 8s ease-out forwards;
+            display: none; /* 初始隐藏 */
+        }
+
+        .letter-content {
+            width: 600px;
+            margin: 100px auto;
+            padding: 40px;
+            background: rgba(255, 245, 230, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgb(232, 229, 229);
+            line-height: 1.8;
+            font-family: '楷体', cursive;
+            font-size: 18px;
+        }
+
+        .audio-permission {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 245, 230, 0.9);
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            text-align: center;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        #fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            mix-blend-mode: screen; /* 添加混合模式使烟花更自然 */
+            display: none; /* 初始隐藏 */
+        }
+
+        @keyframes riseUp {
+            0% {
+                bottom: -100%;
+                opacity: 0;
+            }
+            100% {
+                bottom: 0;
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景音乐 -->
+    <div class="audio-permission" id="audioPrompt">
+        <p>🌸 轻触此处开启诗意时光</p>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="./mhsw.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+
+    <!-- 信件内容 -->
+    <div class="letter-container" id="letterContainer">
+        <div class="letter-content">
+            <h2 style="text-align: center;">雪吻云笺</h2>
+            <!-- 这里放入你的信件内容 -->
+            <p>亲爱的娘亲瑶瑶：</p>
+            <p>当腊月二十八的子夜烟花在玻璃上炸开第一朵蓝绣球时，我正对着窗角的冰霜哈气，好似看见十七岁的我们踩着盛夏蝉鸣，从融化的冰纹里轻盈跃出。有时候你校服口袋总塞着一些零零碎碎的糖和其他吃的，我课桌深处藏着一沓各种颜色的笔写的歌词本，数学卷子下压着半本《花火》。我还记得每次晚自习停电，整个楼里总是“两岸猿声啼不住”，原来命运早将离别写成童话的序章，而我们都是伏笔里发光的逗号，至今“轻舟已过万重山”。</p>
+            <p>如期而至的高考好像并没有特别的恢弘盛大，我们各自考完便分道扬镳，只觉结束了三年的折磨，也结束了少年的盛夏——后来我们成了候鸟分飞的信笺。你在北欧森林裹着羊毛毯记录极光波长时，我正在鸣沙山脚捡拾被风沙打磨千年的碎瓷，不同时空交织下，我们各自写着自己的故事。其实那时候，我还以为青春会像断线的纸鸢坠入云海......直到某个傍晚，你的消息突然撞进屏幕。暮色正在我窗台流淌成蜜糖色，当你需要我的时候，我从未如此兴奋过。原来时光从未走散，它只是悄悄蜷缩成毛线球，等某个起风的夜晚突然滚到脚边，抖落一地细碎的星尘。</p>
+            <p>现在你手捧予我白玫瑰的香味正在我的书桌上蔓延，我们相距几十里，你在城北小村里看阖家欢乐，我在城南小屋中煮酒酿丸子，也轻嗅玫瑰的芳香。对了，一会儿我就要放灯了，愿新年如我们手中未放的天灯，盛满所有未启封的黎明，飘香我们的未来，娘亲~~~这不会是我们的最后一个春节，我们几个要在一起的更远，再远一点~未来已来，一起走入那片梦幻飘渺的前程吧~</p>
+            <p>新年钟声漫过屋檐时，愿我们继续做银河系漫游的野孩子。把没来得及分享的十四次落日折成会发光的千纸鹤，将错过的生日歌存在贝壳里等潮汐播放，让西伯利亚铁路的汽笛与江南乌篷船的摇橹声在晨昏线轻轻相撞。不必说这些年独自穿越了多少场暴雪，你看窗外新雪簌簌落下时，所有离散的岁月都在悄然返航。</p>
+            <!-- 更多段落 -->
+            <p style="text-align: right; margin-top: 30px;">你闺女</p>
+            <p style="text-align: right;">乙巳年元夜</p>
+        </div>
+    </div>
+
+    <!-- 烟花画布 -->
+    <canvas id="fireworks"></canvas>
+
+    <script>
+        // 新增音频交互逻辑
+        const audio = document.getElementById('bgMusic');
+        const audioPrompt = document.getElementById('audioPrompt');
+        const letterContainer = document.getElementById('letterContainer');
+        const fireworksCanvas = document.getElementById('fireworks');
+
+        // 点击提示后开始播放
+        audioPrompt.addEventListener('click', () => {
+            audio.play()
+                .then(() => {
+                    audioPrompt.style.display = 'none';
+                    letterContainer.style.display = 'block'; // 显示信件内容
+                    fireworksCanvas.style.display = 'block'; // 显示烟花画布
+                    animate(); // 开始烟花动画
+                })
+                .catch(err => {
+                    console.error('音频播放失败:', err);
+                    audioPrompt.innerHTML = '❌ 播放失败，请检查浏览器设置';
+                });
+        });
+
+        // 尝试自动播放（部分浏览器支持）
+        window.addEventListener('DOMContentLoaded', () => {
+            audio.play().catch(() => {
+                // 自动播放失败时显示提示
+                audioPrompt.style.display = 'block';
+            });
+        });
+
+        // 优化后的烟花脚本
+        const canvas = document.getElementById('fireworks');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.alpha = 0.9;  // 初始透明度提高
+                this.baseColor = Math.random() * 360;
+                this.color = `hsla(${this.baseColor}, 100%, 70%, ${this.alpha})`;
+                this.velocity = {
+                    x: (Math.random() - 0.5) * 5,
+                    y: (Math.random() - 0.5) * 5
+                };
+                this.size = Math.random() * 3 + 1;
+                this.decay = 0.015; // 增加消失速度
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            update() {
+                this.x += this.velocity.x;
+                this.y += this.velocity.y;
+                this.alpha -= this.decay;  // 使用动态消失速度
+                this.color = `hsla(${this.baseColor}, 80%, 70%, ${this.alpha})`;
+                this.size *= 0.98;  // 添加粒子收缩效果
+                this.draw();
+            }
+        }
+
+        let particles = [];
+        function createFirework() {
+            const x = Math.random() * canvas.width * 0.8 + canvas.width * 0.1;
+            const y = Math.random() * canvas.height * 0.6 + canvas.height * 0.2;
+            for (let i = 0; i < 30; i++) {  // 进一步减少粒子数量
+				particles.push(new Particle(x, y));
+			}
+		}
+	
+		function animate() {
+			// 使用更淡的背景清除方式
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			
+			// 从后往前遍历避免索引问题
+			for (let i = particles.length - 1; i >= 0; i--) {
+				particles[i].update();
+				if (particles[i].alpha <= 0 || particles[i].size <= 0.5) {
+					particles.splice(i, 1);
+				}
+			}
+			
+			// 添加时间间隔控制
+			if (Math.random() < 0.015) createFirework(); // 进一步降低生成频率
+			requestAnimationFrame(animate);
+		}
+	
+		animate();
+	
+		// 窗口大小改变时重置画布
+		window.addEventListener('resize', () => {
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
+		});
+	</script>
+</body>
+</html>
